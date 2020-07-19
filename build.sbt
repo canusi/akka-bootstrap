@@ -14,9 +14,9 @@ scalaSource in Test := baseDirectory.value / "src"/ "test" / "scala"
 val config = ConfigFactory.load()
 
 lazy val settingsMain = Seq(
-  name := "myprojectname",
-  version := "0.1",
-  organization := "com.organization",
+  name := "akka-bootstrap",
+  version := "1.0",
+  organization := "com.canusi",
   scalaVersion := "2.12.7",
   test in assembly := {},
   assemblyMergeStrategy in assembly := {
@@ -36,25 +36,33 @@ lazy val root = ( project in file(".") )
 
 
 // Declare your versions here
-lazy val akkaVersion = "2.5.23"
+lazy val vAkka = "2.5.23"
+lazy val vScalaTest = "3.0.8"
+lazy val vSpecs2Core = "4.7.1"
+lazy val vTypeLogging = "3.9.2"
+lazy val vTypeConfig = "1.3.0"
 
 
 // Add your libraries here.
-libraryDependencies ++= depTest ++ depAkkaTests ++ depTypConf
+libraryDependencies ++= depTest ++ depAkkaTests ++ depTypeConfig ++ depTypeLogging
 
 
 // Compose your modules here
 lazy val depTest = Seq(
-  "org.scalatest" %% "scalatest" % "3.0.8" % "test"
-  , "org.specs2" %% "specs2-core" % "4.7.1" % Test
+  "org.scalatest" %% "scalatest" % vScalaTest % Test
+  , "org.specs2" %% "specs2-core" % vSpecs2Core % Test
 )
 
 lazy val depAkkaTests = Seq(
-  "com.typesafe.akka" %% "akka-stream" % akkaVersion
-  , "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion
-  , "com.typesafe.akka" %% "akka-testkit" % akkaVersion
+  "com.typesafe.akka" %% "akka-stream" % vAkka
+  , "com.typesafe.akka" %% "akka-stream-testkit" % vAkka % Test
+  , "com.typesafe.akka" %% "akka-testkit" % vAkka % Test
 )
 
-lazy val depTypConf = Seq(
-  "com.typesafe" % "config" % "1.3.0"
+lazy val depTypeLogging = Seq(
+  "com.typesafe.scala-logging" %% "scala-logging" % vTypeLogging
+)
+
+lazy val depTypeConfig = Seq(
+  "com.typesafe" % "config" % vTypeConfig
 )
