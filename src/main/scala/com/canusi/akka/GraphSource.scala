@@ -11,21 +11,21 @@ trait GraphSource[Output] extends AbstractGraph {
 
 
   /**
-   * Timer to sleep if `hasMore` = false and `isClosed` = false
-   * Defaults to 1000L if set to None. If no sleep is required, implement `closeWhen` = { `hasMore` = false }
+   * Timer to sleep if [[hasMore]] = false and [[isClosed]] = false
+   * Defaults to 1000L if set to None. If no sleep is required, implement {{{ closeOn = { hasMore = false } }}}
    */
   val sleepListenTimerMilliseconds: Option[Long]
 
   /**
    * Allows a graph to close itself.
-   * Called after `getNext`. If true, closes graph.
+   * Called after [[getNext()]]. If true, closes graph.
    * @return
    */
   def closeOn: Boolean
 
   /**
-   * Iterator use-case. If true, `getNext` is called. If false, checks `isClosed`.
-   * If `isClosed` = true, begins shutting down the graph. If false, waits using `sleepListenTimerMilliseconds`
+   * Iterator use-case. If true, [[getNext()]] is called. If false, checks [[isClosed()]].
+   * If [[isClosed()]] = true, begins shutting down the graph. If false, waits using [[sleepListenTimerMilliseconds]]
    * @return
    */
   def hasMore: Boolean
