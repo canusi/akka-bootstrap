@@ -30,6 +30,7 @@ class AkkaSink[Input](job: GraphSink[Input])
         finishPromise.success(Done)
         log.info( "Closing sink")
         completeStage()
+        job.close()
       }
 
       override def onUpstreamFailure(ex: Throwable): Unit = {

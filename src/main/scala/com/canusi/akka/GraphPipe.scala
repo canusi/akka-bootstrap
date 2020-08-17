@@ -8,8 +8,8 @@ import scala.collection.mutable
  *
  * @author Benjamin Hargrave
  */
-trait GraphPipe[Input, Output] extends GraphSource[Output]
-  with GraphSink[Input] {
+trait GraphPipe[Input, Output] extends AbstractGraphSource[Output]
+  with AbstractGraphSink[Input] with Closable   {
 
   private lazy val internalQueue = mutable.Queue[Output]()
 
@@ -53,11 +53,7 @@ trait GraphPipe[Input, Output] extends GraphSource[Output]
    */
   def afterOutput(): Unit
 
-  final override def closeOn: Boolean = false
-
-  def onClose(): Unit = {}
-
-  final override val sleepListenTimerMilliseconds: Option[Long] = None
+  final override protected def checkForClose(): Unit = {}
 
   final override def hasMore: Boolean = internalQueue.nonEmpty
 
