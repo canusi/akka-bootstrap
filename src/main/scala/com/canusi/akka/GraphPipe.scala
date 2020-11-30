@@ -17,16 +17,15 @@ trait GraphPipe[Input, Output] extends AbstractGraphSource[Output]
 
   final override def pullIn(input: Input): Unit = {
     grabInput(input)
-    handlePush(input)
   }
 
   @tailrec
-  private def handlePush(input: Input): Unit ={
+  final def preparePush(): Unit ={
     if(pushRequested){
       internalQueue += output()
       pushRequested = false
       afterOutput()
-      handlePush(input)
+      preparePush()
     }
   }
 
@@ -66,10 +65,16 @@ trait GraphPipe[Input, Output] extends AbstractGraphSource[Output]
   }
 
 
+  private var waitForOutput: Boolean = false
+
+  def getWaitForOutput(): Boolean = waitForOutput
+  def setWaitForOutput( wait: Boolean ): Unit = waitForOutput = wait
+
+
   @tailrec
   private def closeOutput(): Unit  = {
     if( pushRequested ){
-      log.info( "Trying extended close")
+      log.debug( "Trying extended close")
       internalQueue += output
       pushRequested = false
       afterOutput()

@@ -13,9 +13,12 @@ scalaSource in Test := baseDirectory.value / "src"/ "test" / "scala"
 // use this to load in library versions ( akka for example ) across multiple libraries
 val config = ConfigFactory.load()
 
+
+lazy val vCanusi = "1.0.8"
+
 lazy val settingsMain = Seq(
   name := "akka-bootstrap",
-  version := "1.0",
+  version := vCanusi,
   organization := "com.canusi",
   scalaVersion := "2.12.7",
   test in assembly := {},
@@ -33,9 +36,18 @@ lazy val settingsMain = Seq(
 lazy val root = ( project in file(".") )
   .settings( settingsMain )
 
+resolvers += ( "Nexus" at "http://repository.canusi.com:9081/repository/com.canusi/" ).withAllowInsecureProtocol(true)
+credentials += Credentials("Sonatype Nexus", "repository.canusi.com", "admin", "BjvBBPQlK1clPODkBGyFjcdUu6JhIJ5*hFVBo")
+publishTo := {
+  val nexus = "http://repository.canusi.com:9081/repository/com.canusi/"
+  if (isSnapshot.value)
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases" at nexus + "content/repositories/releases")
+}
 
 
-// Declare your versions here
+  // Declare your versions here
 lazy val vAkka = "2.5.23"
 lazy val vScalaTest = "3.0.8"
 lazy val vSpecs2Core = "4.7.1"

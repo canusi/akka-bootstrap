@@ -1,6 +1,6 @@
 package com.canusi.akka
 
-import akka.event.{Logging, LoggingAdapter}
+import akka.event.LoggingAdapter
 
 import scala.util.{Failure, Success, Try}
 
@@ -11,6 +11,8 @@ import scala.util.{Failure, Success, Try}
  */
 trait AbstractGraph {
 
+  // todo, migrate these to actors
+ // lazy val log: LoggingAdapter = Logging(context.system, this)
   private var logger: LoggingAdapter = null
 
   private[akka] def setLogger( logger: LoggingAdapter ) = {

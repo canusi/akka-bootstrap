@@ -21,8 +21,12 @@ object GraphBuilder {
         .log("before-map")
         .withAttributes(
           Attributes
-          .logLevels(onElement = Logging.WarningLevel
-            , onFinish = Logging.InfoLevel, onFailure = Logging.DebugLevel))
+          .logLevels(
+              onElement = Logging.WarningLevel
+            , onFinish = Logging.InfoLevel
+            , onFailure = Logging.DebugLevel
+          )
+        )
 
     )
   }
@@ -44,6 +48,7 @@ object GraphBuilder {
     def run(materializer: Materializer, timeout: Timeout = Timeout.apply( 365 * 291 days ) ): Future[Done] =
       source.runWith( Sink.fromGraph( AkkaSink( sink ) ) )( materializer )
   }
+
 }
 
 

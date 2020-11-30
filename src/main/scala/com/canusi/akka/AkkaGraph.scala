@@ -1,5 +1,7 @@
 package com.canusi.akka
 
+import java.util.TimerTask
+
 import akka.stream.stage._
 import akka.stream.{Attributes, FlowShape, Inlet, Outlet}
 
@@ -36,23 +38,36 @@ class AkkaGraph[Input, Output](job: GraphPipe[Input, Output])
       }
 
       var waitingOnPull = false
+      var stageCompleted = false
+      var taskScheduled = false
 
       def pushOut(): Unit = {
+        job.preparePush()
         if (job.hasMore) {
           push(out, job.tryGetNext)
         } else {
-          if (job.isClosed()) {
-            log.info("Closing Graph")
-            completeStage()
-          } else {
+          // todo this needs a feature extension within the graph pipe
+          if( !job.isClosed() ){
             waitingOnPull = true
             pull(in)
+          } else if(job.isClosed() && job.getWaitForOutput() ){
+            log.debug( s"Sleeping ${this}. Waiting for job to process.")
+            Thread.sleep(1000L)
+            pushOut()
+          } else if (job.isClosed() && !job.getWaitForOutput() ){
+            log.info("Closing Graph")
+            completeStage()
           }
         }
       }
 
+      private class StartJobTask extends TimerTask {
+        override def run(): Unit = {
+          pushOut()
+        }
+      }
+
       override def onUpstreamFailure(ex: Throwable): Unit = {
-        ???
         job.close()
         pushOut()
         failStage(ex)
@@ -63,7 +78,7 @@ class AkkaGraph[Input, Output](job: GraphPipe[Input, Output])
        * When the input is closed, this will continue pushing, until the job has no more elements.
        */
       override def onPush(): Unit = {
-        job.pullIn(grab(in))
+        job.tryPullIn(grab(in))
         if( waitingOnPull ){
           waitingOnPull = false
           pushOut()
